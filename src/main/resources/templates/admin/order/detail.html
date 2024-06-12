@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title th:text="'Đơn hàng ' + ${order.id}"></title>
+
+    <th:block id="css">
+        <link rel="stylesheet" th:href="@{/adminlte/dist/css/order.css}">
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="/admin/orders">Danh sách đơn hàng</a></li>
+                <li class="breadcrumb-item active" th:text="'Đơn hàng ' + ${order.id}"></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <a role="button" class="btn btn-default" href="/admin/orders">
+            <span class="fas fa-chevron-left" style="margin-right:0.5rem;"></span>
+            <span>Trở về</span>
+        </a>
+        <button class="btn btn-success btn-update-order">
+            <span>Cập nhật</span>
+        </button>
+        <div class="clear"></div>
+    </div>
+
+    <!-- Main content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline">
+                <div class="card-body pad">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="info-div">
+                                <label>Thông tin người đặt</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" readonly
+                                                   th:value="${order.buyer.fullName}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" readonly
+                                                   th:value="${order.buyer.phone}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" readonly
+                                                   th:value="${order.buyer.email}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i
+                                                        class="far fa-calendar-alt"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" readonly
+                                                   th:value="${#dates.format(order.createdAt, 'dd-MM-yyyy HH:mm')}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-div">
+                                <label>Thông tin người nhận</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            <input id="receiver-name" type="text" class="form-control"
+                                                   th:value="${order.receiverName}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                            </div>
+                                            <input id="receiver-phone" type="text" class="form-control"
+                                                   th:value="${order.receiverPhone}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 10px;">
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <textarea name="receiver-address" id="receiver-address" rows="5"
+                                                      th:text="${order.receiverAddress}" readonly></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-div">
+                                <label>Chi tiết đơn hàng</label>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá tiền</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <th:block th:each="item : ${order.getOrderItems}">
+                                            <tr>
+                                                <td>
+                                                    <div th:text="${item.product.name}"></div>
+                                                </td>
+                                                <td width="15%" th:text="${item.quantity}"></td>
+                                                <td width="18%">
+                                                    <span class="text-price" th:text="${item.product.price}"></span> đ
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <td class="text-center text-danger h5" colspan="3"><b>Thanh toán:
+                                                <span class="text-price" th:text="${order.totalAmount}"></span>&#x20AB;</b>
+                                            </td>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="edit-order-div">
+                                <label>Trạng thái đơn hàng</label>
+                                <select name="status" class="form-control" id="status">
+                                    <option value="1" th:selected="${order.status} == 1">Chờ lấy hàng</option>
+                                    <option value="2" th:selected="${order.status} == 2">Đang giao hàng</option>
+                                    <option value="3" th:selected="${order.status} == 3">Đã giao hàng</option>
+                                    <option value="4" th:selected="${order.status} == 4">Đã trả hàng</option>
+                                    <option value="5" th:selected="${order.status} == 5">Đã hủy</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script th:inline="javascript">
+        $('.btn-update-order').click(function () {
+            let status = $('#status').val();
+            req = {
+                status: parseInt(status),
+            }
+            var myJSON = JSON.stringify(req);
+            $.ajax({
+                url: '/api/admin/orders/' + [[${order.id}]] + '/update-status',
+                type: 'PUT',
+                data: myJSON,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    toastr.success("Cập nhật thành công");
+                    setTimeout(function () {
+                        location.href = "/admin/orders/";
+                    }, 500)
+                },
+                error: function (data) {
+                    toastr.warning(data.responseJSON.message);
+                },
+            });
+        })
+    </script>
+</th:block>
+</body>
+</html>

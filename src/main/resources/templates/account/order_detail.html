@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                ~{:: title},
+                                                'short-header',
+                                                ~{:: #css-resources},
+                                                ~{:: #js-resources},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Thông tin đơn hàng</title>
+
+    <th:block id="css-resources">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/header.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/account.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/bid-details.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/order-details.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content" class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="left-sidebar">
+                <div class="header">
+                    <div class="avatar"><img class="img-fluid" th:src="@{/image/post/avatar.png}" alt="avatar"/></div>
+                    <div class="user-info">
+                        <div class="user-name" th:text="${user_fullname}"></div>
+                        <div class="edit-profile">Chỉnh sửa tài khoản</div>
+                    </div>
+                </div>
+                <div class="break-line"></div>
+                <div class="nav-sidebar">
+                    <a class="account nav-item" href="/tai-khoan">Thông tin tài khoản</a>
+                    <a sec:authorize="hasRole('ADMIN')" class="nav-item" href="/admin">Quản lý Cửa hàng</a>
+                    <a class="buying-order nav-item" href="/tai-khoan/lich-su-giao-dich">Đơn hàng</a>
+                    <a class="btn btn-primary red-btn sign-out-btn" href="/api/logout">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 main-content-wrapper">
+            <div class="main-content">
+                <div class="header"><a class="go-back-previous-page" href="/tai-khoan/lich-su-giao-dich"><i
+                        class="fas fa-chevron-left"></i> Trở lại</a>
+                    <div class="order-status-wrapper">
+                        <div class="order-number-wrapper">Mã đơn <span class="order-number"
+                                                                       th:text="'#'+${order.id}"></span></div>
+                        <div th:if="${order.status == 1}">Đang chờ lấy hàng</div>
+                        <div th:if="${order.status == 2}">Đang giao hàng</div>
+                        <div th:if="${order.status == 3}">Giao hàng thành công</div>
+                        <div th:if="${order.status == 4}">Trả hàng</div>
+                        <div th:if="${order.status == 5}">Hủy đơn</div>
+                    </div>
+                </div>
+                <div class="break-line"></div>
+                <div class="item" th:each="item: ${order.getOrderItems}">
+
+                    <div class="product-info-wrapper">
+                        <div class="thumbnails"><img class="img-fluid" th:src="${item.product.productImages[0]}"
+                                                     th:alt="${item.product.name}"/></div>
+                        <div class="product-info"><span class="name" th:text="${item.product.name}"></span>
+                        </div>
+                    </div>
+                    <div class="price asks-price"><span class="text-price" th:text="${item.product.price}"></span>
+                        &#x20AB;
+                        <div>x <span th:text="${item.quantity}"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="shipping-and-price-wrapper">
+                <div class="shipping-wrapper">
+                    <div class="title">Thông tin giao hàng</div>
+                    <div class="buyer-name" th:text="${order.receiverName}"></div>
+                    <div class="shipping-address" th:text="${order.receiverAddress}"></div>
+                    <div class="phone" th:text="${order.receiverPhone}"></div>
+                </div>
+                <div class="price-wrapper">
+                    <div >Thành tiền <span class="total-price">
+                        <span class="text-price" th:text="${order.totalAmount}"></span> &#x20AB;</span></div>
+                    <button class="btn btn-danger" id="cancel-btn">Hủy đơn</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<th:block id="js-resources">
+    <script th:src="@{/script/except-home-page.js}"></script>
+    <script th:src="@{/script/buying-order.js}"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        document.getElementById("cancel-btn").addEventListener("click", async()=> {
+            try {
+                let isConfirm = confirm("Bạn có chắc muốn hủy đơn hàng không?")
+                if(isConfirm) {
+                    await axios.post('/api/cancel-order/' + [[${order.id}]]);
+                    location.href = "/tai-khoan/lich-su-giao-dich";
+                }
+            }
+            catch (error) {
+                alert(error.response.data.message);
+            }
+        })
+    </script>
+</th:block>
+</body>
+</html>

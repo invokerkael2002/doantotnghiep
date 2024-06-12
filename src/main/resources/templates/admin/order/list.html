@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+<head>
+    <title>Danh sách đơn hàng</title>
+
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/vendor/pagination/simplePagination.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                <li class="breadcrumb-item active">Danh sách đơn hàng</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <a role="button" class="btn btn-success" th:href="@{/admin/orders/create}">
+            <span class="fa fa-plus"></span>
+            <span>Tạo đơn hàng</span>
+        </a>
+        <a role="button" class="btn btn-info" href="/admin/orders">
+            <span class="fas fa-redo-alt"></span>
+            <span>Refresh</span>
+        </a>
+    </div>
+
+    <!-- Main content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline">
+                <div class="card-body pad">
+                    <div class="table-responsive">
+                        <!-- Table data -->
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr class="heading">
+                                <th>
+                                    Mã đơn
+                                </th>
+                                <th width="22%">
+                                    Người nhận
+                                </th>
+                                <th width="15%">
+                                    Điện thoại
+                                </th>
+                                <th width="10%">
+                                    Trạng thái
+                                </th>
+                                <th width="30%">
+                                    Sản phẩm
+                                </th>
+                                <th width="15%">
+                                    Ngày tạo đơn
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="order : ${orders}">
+                                    <tr>
+                                        <td>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" th:text="${order.id}"></a>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" th:text="${order.receiverName}"></a>
+                                        </td>
+                                        <td th:text="${order.receiverPhone}"></td>
+                                        <td>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" >
+                                                <span th:if="${order.status} == 1" class="badge badge-warning">Chờ lấy hàng</span>
+                                                <span th:if="${order.status} == 2" class="badge badge-primary">Đang giao hàng</span>
+                                                <span th:if="${order.status} == 3" class="badge badge-success">Đã giao hàng</span>
+                                                <span th:if="${order.status} == 5" class="badge badge-light">Đã hủy</span>
+                                                <span th:if="${order.status} == 4" class="badge badge-danger">Đã trả hàng</span>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <ul th:each="item : ${order.getOrderItems}" >
+                                                <li th:text="${item.product.name}"></li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <span th:text="${#dates.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></span>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script type="text/javascript" th:src="@{/adminlte/dist/js/table.js}"></script>
+</th:block>
+</body>
+</html>
+
+

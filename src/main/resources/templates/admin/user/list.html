@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}"
+>
+  <head>
+    <title>Danh sách người dùng</title>
+
+    <th:block id="css">
+      <link
+        rel="stylesheet"
+        type="text/css"
+        th:href="@{/vendor/pagination/simplePagination.css}"
+      />
+    </th:block>
+  </head>
+  <body>
+    <main id="main-content">
+      <!-- Breadcrumb -->
+      <div class="row">
+        <div class="col-12">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+            <li class="breadcrumb-item active">Danh sách người dùng</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button
+          class="btn btn-success"
+          data-toggle="modal"
+          data-target="#modal-add-new-brand"
+        >
+          <span class="fa fa-plus"></span>
+          <span>Thêm tài khoản</span>
+        </button>
+        <a role="button" class="btn btn-info" href="/admin/users">
+          <span class="fas fa-redo-alt"></span>
+          <span>Refresh</span>
+        </a>
+      </div>
+
+      <!-- Main content -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-outline">
+            <div class="card-body pad">
+              <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                  <thead>
+                    <tr class="heading">
+                        <th>Id</th>
+                      <th>Tên tài khoản</th>
+                      <th>Email</th>
+                      <th>Số điện thoại</th>
+                      <th>Địa chỉ</th>
+                      <th>roles</th>
+                      <th>Ngày tạo</th>
+                      <th class="text-center">Xóa tài khoản</th>
+                    </tr>
+                  </thead>
+                  <tbody class="list-user">
+                    <th:block th:each="user, iStat : ${users}">
+                      <tr>
+                        <td th:text="${iStat.index} + 1"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.address}"></td>
+                        <td th:text="${user.roles}"></td>
+                        <td th:text="${#dates.format(user.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td class="text-center">
+                          <button class="btn btn-outline-danger" th:onclick="|removeUser(${user.id})|">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </th:block>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--     Modal create user-->
+      <div
+        class="modal fade"
+        id="modal-add-new-brand"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modalAddNewBrand"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Thêm tài khoản</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input
+                class="form-control sign-up-full-name mt-3"
+                placeholder="Họ và tên *"
+                autocomplete="autocomplete"
+              />
+              <div class="invalid-feedback"></div>
+              <input
+                class="form-control sign-up-phone mt-3"
+                placeholder="Số điện thoại *"
+                autocomplete="autocomplete"
+              />
+              <div class="invalid-feedback"></div>
+              <input
+                class="form-control sign-up-email mt-3"
+                placeholder="Email *"
+                autocomplete="autocomplete"
+              />
+              <div class="invalid-feedback"></div>
+              <input
+                class="form-control sign-up-password mt-3"
+                type="password"
+                placeholder="Mật khẩu *"
+                autocomplete="autocomplete"
+              />
+              <div class="invalid-feedback"></div>
+              <input
+                class="form-control sign-up-confirm-password mt-3"
+                type="password"
+                placeholder="Xác nhận mật khẩu *"
+                autocomplete="autocomplete"
+              />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary btn-add-new-user">
+                Thêm
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <th:block id="js">
+      <script
+        type="text/javascript"
+        th:src="@{/adminlte/dist/js/table.js}"
+      ></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script th:inline="javascript">
+        const removeUser = async (id) => {
+          try {
+            let isConfirm = confirm("Bạn có chắc muốn xóa tài khoản này")
+            if (isConfirm) {
+              await axios.delete(`/api/admin/users/${id}`);
+              location.reload();
+            }
+          } catch (error) {
+            alert(error.response.data.message);
+          }
+        }
+
+        $(".btn-add-new-user").click(function () {
+          let isValid = true;
+          $(".invalid-feedback").css("display", "none");
+          let phoneFormat = new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g);
+          let emailFormat = new RegExp(
+            /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/
+          );
+
+          let fullName = $(".sign-up-full-name");
+          let fullNameValue = fullName.val();
+          let fullNameInvalid = fullName.next();
+          let phone = $(".sign-up-phone");
+          let phoneValue = phone.val();
+          let phoneInvalid = phone.next();
+          let email = $(".sign-up-email");
+          let emailValue = email.val();
+          let emailInvalid = email.next();
+          let password = $(".sign-up-password");
+          let passwordValue = password.val();
+          let passwordInvalid = password.next();
+          let confirmPassword = $(".sign-up-confirm-password");
+          let confirmPasswordValue = confirmPassword.val();
+          let confirmPasswordInvalid = confirmPassword.next();
+
+          // Validate name
+          if (fullNameValue == "") {
+            fullNameInvalid.css("display", "block");
+            fullNameInvalid.html("Vui lòng nhập họ tên");
+            isValid = false;
+          }
+
+          // Validate phone
+          if (phoneValue == "") {
+            phoneInvalid.css("display", "block");
+            phoneInvalid.html("Vui lòng nhập số điện thoại");
+            isValid = false;
+          } else if (!phoneFormat.test(phoneValue)) {
+            phoneInvalid.css("display", "block");
+            phoneInvalid.html("Số điện thoại không hợp lệ");
+            isValid = false;
+          }
+
+          // Validate email
+          if (emailValue == "") {
+            emailInvalid.css("display", "block");
+            emailInvalid.html("Vui lòng nhập email");
+            isValid = false;
+          } else if (!emailFormat.test(emailValue)) {
+            emailInvalid.css("display", "block");
+            emailInvalid.html("Email không hợp lệ");
+            isValid = false;
+          }
+
+          // Validate password
+          if (passwordValue.length < 4 || passwordValue.length > 20) {
+            passwordInvalid.css("display", "block");
+            passwordInvalid.html("Độ dài mật khẩu từ 4 - 20 ký tự");
+            isValid = false;
+          }
+
+          // Validate confirm password
+          if (confirmPasswordValue < 4 || passwordValue.length > 20) {
+            confirmPasswordInvalid.css("display", "block");
+            confirmPasswordInvalid.html(
+              "Độ dài xác nhận mật khẩu từ 4 - 20 ký tự"
+            );
+            isValid = false;
+          } else if (confirmPasswordValue !== passwordValue) {
+            confirmPasswordInvalid.css("display", "block");
+            confirmPasswordInvalid.html(
+              "Mật khẩu và xác nhận mật khẩu không giống nhau"
+            );
+            isValid = false;
+          }
+
+          if (isValid == true) {
+            req = {
+              full_name: fullNameValue,
+              email: emailValue,
+              password: passwordValue,
+              phone: phoneValue,
+            };
+            var myJSON = JSON.stringify(req);
+            $.ajax({
+              url: "/api/admin/register",
+              type: "POST",
+              data: myJSON,
+              contentType: "application/json; charset=utf-8",
+              success: function (data) {
+                console.log(data);
+                $(".modal").modal("hide");
+                location.reload();
+              },
+              error: function (data) {
+                toastr.warning(data.responseJSON.message);
+              },
+            });
+          }
+        });
+      </script>
+    </th:block>
+  </body>
+</html>

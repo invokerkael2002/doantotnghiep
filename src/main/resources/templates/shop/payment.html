@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                ~{:: title},
+                                                'short-header',
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Đặt hàng</title>
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/header.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/product-info.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/pricing.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/shipping-info.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/product-details/size-choose.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/buying-section.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/product-details/size-guide-table.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/input-radio.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/buying.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb container">
+        <a class="previous-page" href="/">Trang chủ</a>
+        <i class="fas fa-chevron-right arrow"></i>
+        <a class="previous-page" href="/gio-hang">Giỏ hàng</a>
+        <i class="fas fa-chevron-right arrow"></i>
+        <span class="current-page">Đặt hàng</span>
+    </div>
+
+    <div class="main-wrapper container">
+        <div class="row">
+            <div class="col-7">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="bg-info">
+                        <th>Tên Sản phẩm</th>
+                        <th width="15%">Giá</th>
+                        <th width="15%">Số lượng</th>
+                        <th width="15%">Tổng giá</th>
+                    </tr>
+                    </thead>
+                    <tr th:each="item: ${cart}">
+                        <td th:text="${item.product.name}"></td>
+                        <td><span class="text-price" th:text="${item.product.price}"></span>&#x20AB;</td>
+                        <td th:text="${item.quantity}"></td>
+                        <td><span class="text-price" th:text="${item.subTotal}"></span>&#x20AB;</td>
+                    </tr>
+
+                    <tfoot>
+                        <tr>
+                            <td class="text-center text-danger h5" colspan="4"><b>Thanh toán:
+                                <span class="text-price" th:text="${totalAmount}"></span>&#x20AB;</b>
+                            </td>
+                        </tfoot>
+                </table>
+            </div>
+            <div class="col-5">
+                <section class="buying">
+                    <!-- Adress Section-->
+                    <div class="address-info-wrapper childs">
+                        <div class="coupon price-include">
+                            <div class="text required-label">Người nhận hàng</div>
+                            <div>
+                                <input class="form-control" placeholder="Nhập tên người nhận" type="text"
+                                       th:value="${user_fullname}" id="in-user-fullname"/>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="coupon price-include">
+                            <div class="text required-label">Điện thoại</div>
+                            <div>
+                                <input class="form-control" placeholder="Nhập số điện thoại" type="text"
+                                       th:value="${user_phone}" id="in-user-phone"/>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="coupon price-include">
+                            <div class="text required-label">Địa chỉ</div>
+                            <div>
+                                <textarea class="form-control" placeholder="Nhập địa chỉ" rows="2"
+                                          th:text="${user_address}" id="in-user-address"></textarea>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <button class="btn btn-info pr-5 pl-5 p-2 mt-3" id="btn-buy-now">Đặt hàng</button>
+
+
+<!--                <button class="btn btn-success pr-5 p-2 mt-3" id="btn-buy-online">Thanh toán VNPay</button>-->
+
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- Modals-->
+    <th:block th:replace="~{fragment/size_choose_modal :: size-choose-modal}"></th:block>
+</main>
+
+<th:block id="js">
+    <script th:src="@{/script/except-home-page.js}"></script>
+    <script th:src="@{/script/size-choose.js}"></script>
+    <script th:src="@{/script/buy-page.js}"></script>
+    <script th:inline="javascript">
+        $('#btn-buy-now').click(function() {
+            let receiverName = $('#in-user-fullname').val();
+            let receiverPhone = $('#in-user-phone').val();
+            let receiverAddress = $('#in-user-address').val();
+            let isValid = true;
+            if (receiverName.length == 0) {
+                fullNameInvalid = $('#in-user-fullname').next();
+                fullNameInvalid.css('display', 'block');
+                fullNameInvalid.html('Vui lòng nhập họ tên người nhận hàng');
+                isValid = false;
+            }
+            if (receiverPhone.length == 0) {
+                phoneInvalid = $('#in-user-phone').next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Vui lòng nhập số điện thoại người nhận hàng');
+                isValid = false;
+            }
+            let phoneFormat = new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g);
+            if (!phoneFormat.test(receiverPhone)) {
+                phoneInvalid = $('#in-user-phone').next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Số điện thoại không hợp lệ');
+                isValid = false;
+            }
+            if (receiverAddress.length == 0) {
+                addressInvalid = $('#in-user-address').next();
+                addressInvalid.css('display', 'block');
+                addressInvalid.html('Vui lòng nhập địa chỉ nhận hàng');
+                isValid = false;
+            }
+
+            if (isValid) {
+                req = {
+                    receiverName: receiverName,
+                    receiverPhone: receiverPhone,
+                    receiverAddress: receiverAddress
+                }
+                var myJSON = JSON.stringify(req);
+                $.ajax({
+                    url: '/api/order',
+                    type: 'POST',
+                    data: myJSON,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        toastr.success("Đặt hàng thành công");
+                        setTimeout(function() {
+                            location.href = "/tai-khoan/lich-su-giao-dich/"+data;
+                        }, 500)
+                    },
+                    error: function(data) {
+                        toastr.warning(data.responseJSON.message);
+                    },
+                });
+
+
+            }
+        });
+
+        $('#btn-buy-now').click(function() {
+            let receiverName = $('#in-user-fullname').val();
+            let receiverPhone = $('#in-user-phone').val();
+            let receiverAddress = $('#in-user-address').val();
+            let isValid = true;
+            if (receiverName.length == 0) {
+                fullNameInvalid = $('#in-user-fullname').next();
+                fullNameInvalid.css('display', 'block');
+                fullNameInvalid.html('Vui lòng nhập họ tên người nhận hàng');
+                isValid = false;
+            }
+            if (receiverPhone.length == 0) {
+                phoneInvalid = $('#in-user-phone').next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Vui lòng nhập số điện thoại người nhận hàng');
+                isValid = false;
+            }
+            let phoneFormat = new RegExp(/((09|03|07|08|05)+([0-9]{8})\b)/g);
+            if (!phoneFormat.test(receiverPhone)) {
+                phoneInvalid = $('#in-user-phone').next();
+                phoneInvalid.css('display', 'block');
+                phoneInvalid.html('Số điện thoại không hợp lệ');
+                isValid = false;
+            }
+            if (receiverAddress.length == 0) {
+                addressInvalid = $('#in-user-address').next();
+                addressInvalid.css('display', 'block');
+                addressInvalid.html('Vui lòng nhập địa chỉ nhận hàng');
+                isValid = false;
+            }
+
+            if (isValid) {
+                req = {
+                    receiverName: receiverName,
+                    receiverPhone: receiverPhone,
+                    receiverAddress: receiverAddress
+                }
+                var myJSON = JSON.stringify(req);
+                $.ajax({
+                    url: '/api/order',
+                    type: 'POST',
+                    data: myJSON,
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        toastr.success("Đặt hàng thành công");
+                        setTimeout(function() {
+                            location.href = "/tai-khoan/lich-su-giao-dich/"+data;
+                        }, 500)
+                    },
+                    error: function(data) {
+                        toastr.warning(data.responseJSON.message);
+                    },
+                });
+
+
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>
+
+

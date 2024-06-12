@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                ~{:: title},
+                                                'short-header',
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Tin tức</title>
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/header.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/news.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/vendor/pagination/simplePagination.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- List Post -->
+    <section class="news-wrapper container">
+        <th:block th:each="post, index : ${data.content}">
+            <a class="news" th:href="@{/tin-tuc/{slug}/{id}(id=${post.id}, slug=${post.slug})}">
+                <th:block th:if="${index.even}">
+                    <div class="row">
+                        <div class="thumbnail col-lg-6 col-12">
+                            <img class="img-fluid" th:src="${post.thumbnail}" th:alt="${post.title}"/>
+                        </div>
+                        <div class="details col-5 mx-1">
+                            <div th:text="${#dates.format(post.publishedAt, 'dd/MM/yyyy')}"></div>
+                            <div class="title" th:text="${post.title}"></div>
+                            <div class="short-desc" th:text="${post.description}"></div>
+                        </div>
+                        <div class="details-small col-12">
+                            <div th:text="${#dates.format(post.publishedAt, 'dd/MM/yyyy')}"></div>
+                            <div class="title" th:text="${post.title}"></div>
+                            <div class="short-desc" th:text="${post.description}"></div>
+                        </div>
+                    </div>
+                </th:block>
+                <th:block th:if="${index.odd}">
+                    <div class="row">
+                        <div class="details col-5 offset-1">
+                            <div th:text="${#dates.format(post.publishedAt, 'dd/MM/yyyy')}"></div>
+                            <div class="title" th:text="${post.title}"></div>
+                            <div class="short-desc" th:text="${post.description}"></div>
+                        </div>
+                        <div class="thumbnail col-lg-6 col-12">
+                            <img class="img-fluid" th:src="${post.thumbnail}" th:alt="${post.title}"/>
+                        </div>
+                        <div class="details-small col-12">
+                            <div th:text="${#dates.format(post.publishedAt, 'dd/MM/yyyy')}"></div>
+                            <div class="title" th:text="${post.title}"></div>
+                            <div class="short-desc" th:text="${post.description}"></div>
+                        </div>
+                    </div>
+                </th:block>
+            </a>
+        </th:block>
+    </section>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-3" th:if="${data.totalPages.size()} > 1">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" th:if="${not data.first}">
+                    <a class="page-link"
+                       th:href="@{/tin-tuc?page={pageNumber} (pageNumber = ${data.pageNumber - 1})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="p : ${data.totalPages}"
+                    th:classappend="${p == data.pageNumber} ? 'active' : ''">
+                    <a class="page-link"
+                       th:href="@{/tin-tuc?page={pageNumber} (pageNumber = ${p})}"
+                       th:text="${p}">1</a>
+                </li>
+                <li class="page-item" th:if="${not data.last}">
+                    <a class="page-link"
+                       th:href="@{/tin-tuc?page={pageNumber} (pageNumber = ${data.pageNumber + 1})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<th:block id="js">
+</th:block>
+</body>
+</html>
+
+

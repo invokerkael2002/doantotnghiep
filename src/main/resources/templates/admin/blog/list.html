@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Danh sách bài viết</title>
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/vendor/pagination/simplePagination.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                <li class="breadcrumb-item active">Danh sách bài viết</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <a role="button" class="btn btn-success" href="/admin/posts/create">
+            <span class="fa fa-plus" style="margin-right:0.5rem;"></span>
+            <span>Viết bài</span>
+        </a>
+        <a role="button" class="btn btn-info" href="/admin/posts">
+            <span class="fas fa-redo-alt" style="margin-right:0.5rem;"></span>
+            <span>Refresh</span>
+        </a>
+    </div>
+
+    <!-- Main content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-outline">
+                <div class="card-body pad">
+                    <div class="table-responsive">
+                        <!-- Table data -->
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr class="heading">
+                                <th width="55%">
+                                    Tiêu đề
+                                </th>
+                                <th width="15%">
+                                    Trạng thái
+                                </th>
+                                <th width="15" data-order="post.created_at">
+                                    Ngày tạo
+                                </th>
+                                <th width="15%" data-order="post.published_at">
+                                    Ngày xuất bản
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="post : ${posts}">
+                                    <tr>
+                                        <td>
+                                            <a th:href="@{/admin/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
+                                        </td>
+                                        <td th:text="${post.status} == 1 ? 'Công khai' : 'Ẩn'"></td>
+                                        <td th:text="${#dates.format(post.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${#dates.format(post.publishedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                                    </tr>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script type="text/javascript" th:src="@{/vendor/pagination/jquery.simplePagination.js}"></script>
+    <script type="text/javascript" th:src="@{/adminlte/dist/js/table.js}"></script>
+</th:block>
+</body>
+</html>
+
+

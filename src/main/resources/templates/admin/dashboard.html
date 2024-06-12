@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout_admin :: main-fragment(
+                                                ~{:: title},
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Dashboard</title>
+
+    <th:block id="css">
+
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row mb-3">
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-primary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý sản phẩm</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="product-count" th:text="${countProducts}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/products">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-secondary">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý danh mục</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="category-count" th:text="${countCategories}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/categories">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-tertiary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý user</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="countUser" th:text="${countUsers}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/users">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-tertiary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý đơn hàng</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="order-count" th:text="${countOrders}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/orders">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-quaternary">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý nhãn hiệu</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="brands-count" th:text="${countBrands}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/brands">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-xl-4">
+                    <section class="card card-featured-left card-featured-quaternary">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Quản lý bài viết</h4>
+                                        <div class="info">
+                                            <strong class="amount" id="post-count" th:text="${countPost}"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/admin/posts">(Xem chi tiết)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+<!--                <div class="col-xl-4">-->
+<!--                    <section class="card card-featured-left card-featured-quaternary">-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="widget-summary">-->
+<!--                                <div class="widget-summary-col">-->
+<!--                                    <div class="summary">-->
+<!--                                        <h4 class="title">Quản lý bình luận</h4>-->
+<!--                                        <div class="info">-->
+<!--                                            <strong class="amount" id="comment-count" th:text="${countComment}"></strong>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="summary-footer">-->
+<!--                                        <a class="text-muted text-uppercase" href="/admin/comments">(Xem chi tiết)</a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </section>-->
+<!--                </div>-->
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/chart.js@3.1.0/dist/chart.min.js}"></script>
+</th:block>
+</body>
+</html>
+
+

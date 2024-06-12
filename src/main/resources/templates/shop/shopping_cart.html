@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                ~{:: title},
+                                                'short-header',
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Giỏ hàng</title>
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/vendor/pagination/simplePagination.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/header.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/products.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/filter-bar.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/product-showing.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/filter-bar-small.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/product-info.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/pricing.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/shipping-info.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/product-details/size-choose.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/buying/buying-section.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/product-details/size-guide-table.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/input-radio.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/buying.css}"/>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb container">
+        <a class="previous-page" href="/">Trang chủ</a>
+        <i class="fas fa-chevron-right arrow"></i>
+        <span class="current-page">Giỏ hàng</span>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="row m-1">
+            <div class="col-sm-9 render">
+                <th:block th:each="item, status : ${cartItems}">
+                    <div class="row border rounded pt-3" th:with="product = ${item.product}">
+                        <div class="col-1">
+                            <div th:text="${status.count}"></div>
+                        </div>
+                        <div class="col-3">
+                            <img style="max-width: 100%" th:src="@{${product.productImages[0]}}">
+                        </div>
+                        <div class="col-7">
+                            <div>
+                                <a class="text-info"
+                                   th:href="@{/san-pham/{slug}/{id}(id=${product.id}, slug=${product.slug})}">
+                                    <h5 th:text="${product.name}"></h5>
+                                </a>
+                            </div>
+                            <div th:replace="fragment/quantity_control :: quantity_control(${item.quantity}, ${item.product.id})">
+                                Quantity
+                            </div>
+                            <div>
+                                <p>x <span class="text-price" th:text="${product.price}"></span> &#x20AB;</p>
+                            </div>
+                            <div>
+                                <p class="h4 text-danger">= <span class="productSubTotal text-price"
+                                                                  th:text="${item.subTotal}"></span> &#x20AB;</p>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-danger" th:data-id="${product.id}"
+                                    th:onclick="|removeCart(this.getAttribute ('data-id'))|">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row m-1">&nbsp;</div>
+                </th:block>
+            </div>
+
+            <div class="col-sm-3" th:unless="${#lists.isEmpty(cartItems)}">
+                <div class="text-center">
+                    <h3 class="text-info mt-3">Tổng thanh toán: </h3>
+                    <h3 class="h2 text-danger"><span id="totalAmount" class="text-price"></span> &#x20AB;</h3>
+                </div>
+                <div class="mt-2 text-center">
+                    <form th:action="@{/check-out}">
+                    <button class="btn btn-danger mt-2" id="btn-buy-now">Thanh toán </button>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(cartItems)}">
+            <h3>Giỏ hàng chưa có sản phẩm</h3>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script type="text/javascript" th:src="@{/vendor/pagination/jquery.simplePagination.js}"></script>
+    <script th:src="@{/script/except-home-page.js}"></script>
+    <script th:src="@{/script/shop.js}"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        function updateTotal() {
+           let total = 0;
+            $(".productSubTotal").each(function (index, element) {
+                total = total + parseInt(element.innerHTML)
+            })
+            $("#totalAmount").text(total);
+        }
+
+        const removeCart = async (id) => {
+            try {
+                await axios.delete(`/cart/remove/${id}`);
+                toastr.success("Đã xóa khỏi giỏ hàng")
+                location.reload();
+            } catch (error) {
+                alert(error.response.data.message);
+            }
+        }
+
+         const updateCart = async (productId, quantity) => {
+            url = '/cart/update/' + productId + "/" + quantity;
+            try {
+                await axios.put(url);
+                location.reload();
+            } catch (error) {
+                alert(error.response.data.message);
+            }
+        }
+
+        updateTotal();
+
+        $(".minusButton").on("click", function (e) {
+            e.preventDefault();
+            decreaseQuantity($(this));
+        });
+
+        $(".plusButton").on("click", function (e) {
+            e.preventDefault();
+            increaseQuantity($(this));
+        });
+
+        function decreaseQuantity(link) {
+            productId = link.attr("pid");
+            qtyInput = $("#quantity" + productId);
+
+            newQty = parseInt(qtyInput.val()) - 1;
+            if (newQty > 0) {
+                qtyInput.val(newQty);
+                updateCart(productId, newQty);
+            }
+        }
+
+        function increaseQuantity(link) {
+            productId = link.attr("pid");
+            qtyInput = $("#quantity" + productId);
+
+            newQty = parseInt(qtyInput.val()) + 1;
+            if (newQty < 10) {
+                qtyInput.val(newQty);
+                updateCart(productId, newQty);
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>
+
+

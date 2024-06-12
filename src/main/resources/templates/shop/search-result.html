@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{/layout/layout :: main-fragment(
+                                                ~{:: title},
+                                                'short-header',
+                                                ~{:: #css},
+                                                ~{:: #js},
+                                                ~{:: #main-content}
+                                               )}">
+
+<head>
+    <title>Sản phẩm</title>
+
+    <th:block id="css">
+        <link rel="stylesheet" type="text/css" th:href="@{/vendor/pagination/simplePagination.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/header.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/products.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/filter-bar.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/product-showing.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/components/shop/filter-bar-small.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/except-home-page.css}"/>
+        <style>
+            a {
+                overflow: hidden;
+            }
+
+            img.card-img-top:hover {
+                transform: scale(1.2);
+                transition: 0.25s;
+            }
+
+            .item:hover {
+                color: #33beff;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<main id="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb container">
+        <a class="previous-page" href="/">Trang chủ</a>
+        <i class="fas fa-chevron-right arrow"></i>
+        <span class="current-page">Sản phẩm</span>
+    </div>
+
+    <!-- Main content -->
+    <div class="shop-content-wrapper container">
+        <div class="row">
+            <!-- Filter -->
+            <div class="filter-bar col-lg-3">
+
+                <div class="break-line"></div>
+
+                <!-- Brand -->
+                <div class="brand content">
+                    <div class="title">
+                        <h3 class="text-info">Thương hiệu</h3>
+                    </div>
+                    <div class="select-filter collapse show" id="brand-collapse">
+                        <th:block th:each="brand : ${brands}">
+                            <div class="item">
+                                <div>
+                                    <input type="radio" th:value="${brand.id}" style="transform: scale(1.5)"
+                                           th:id="${brand.id}" name="category"
+                                           th:onclick="window.location.href = `/san-pham/thuong-hieu/${id}`"
+                                           th:checked="${brand.id == id}"/>
+                                    <!--                                    <label class="radio-label ml-2" th:text="${brand.name}"></label>-->
+                                    <a th:href="@{/san-pham/thuong-hieu/{id} (id = ${brand.id})}"
+                                       class="radio-label ml-2" th:text="${brand.name}"></a>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="break-line"></div>
+
+                <!-- Category -->
+                <div class="category content">
+                    <div class="title">
+                        <h3 class="text-info">Danh mục</h3>
+                    </div>
+                    <div class="select-filter collapse show" id="categories-collapse">
+                        <th:block th:each="category : ${categories}">
+                            <div class="item">
+                                <div>
+                                    <input type="radio" th:value="${category.name}" style="transform: scale(1.5)"
+                                           th:id="${category.id}" name="category"
+                                           th:onclick="window.location.href = `/san-pham/danh-muc/${id}`"
+                                           th:checked="${category.id == id}"/>
+                                    <!--                                    <label class="radio-label ml-2" th:text="${category.name}"></label>-->
+                                    <a th:href="@{/san-pham/danh-muc/{id} (id = ${category.id})}"
+                                       class="radio-label ml-2" th:text="${category.name}"></a>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="break-line"></div>
+
+                <!-- Price -->
+                <div class="price-range content">
+                    <div class="title">
+                        <h3 class="text-info">Mức giá</h3>
+                    </div>
+                    <!--                    <div class="">-->
+                    <!--                        <div class="item">-->
+                    <!--                            <a th:onclick="window.location.href = `/san-pham/duoi-2-trieu`">-->
+                    <!--                                Dưới 2.000.000 đ-->
+                    <!--                            </a>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="mt-3 item">-->
+                    <!--                            <a th:onclick="window.location.href = `/san-pham/tu-2-trieu-den-6-trieu`">-->
+                    <!--                                Từ 2.000.000 đến 6.000.000 đ-->
+                    <!--                            </a>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="mt-3 item">-->
+                    <!--                            <a th:onclick="window.location.href = `/san-pham/tu-6-trieu-den-10-trieu`">-->
+                    <!--                                Từ 6.000.000 đến 10.000.000 đ-->
+                    <!--                            </a>-->
+                    <!--                        </div>-->
+                    <!--                        <div class="mt-3 item">-->
+                    <!--                            <a th:onclick="window.location.href = `/san-pham/tren-10-trieu`">-->
+                    <!--                                Trên 10.000.000 đ-->
+                    <!--                            </a>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                            Lựa chọn mức giá
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/san-pham/duoi-2-trieu}">
+                                    Dưới 2.000.000 đ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/san-pham/tu-2-trieu-den-6-trieu}">
+                                    Từ 2.000.000 đến 6.000.000 đ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/san-pham/tu-6-trieu-den-10-trieu}">
+                                    Từ 6.000.000 đến 10.000.000 đ
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/san-pham/tren-10-trieu}">
+                                    Trên 10.000.000 đ
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- List product -->
+            <div class="product-showing col-lg-9 col-12">
+                <div class="no-products">
+                    <img th:src="@{/image/noresult.png}" alt="noresult.png">
+                    <h4>Không tìm thấy sản phẩm phù hợp</h4>
+                </div>
+                <div class="row d-flex">
+                    <div th:each="product : ${data.content}">
+                        <div class="product position-relative">
+                            <div class="card">
+                                <a th:href="@{/san-pham/{slug}/{id}(id=${product.id}, slug=${product.slug})}">
+                                    <img class="card-img-top"
+                                         th:src="${product.productImages[0]}"
+                                         th:alt="${product.name}"/>
+                                </a>
+                                <div class="card-body text-center">
+                                    <a th:href="@{/san-pham/{slug}/{id}(id=${product.id}, slug=${product.slug})}">
+                                        <h5 class="card-title" th:text="${product.name}"></h5>
+                                    </a>
+                                    <p class="price text-danger"><span class="text-price"
+                                                                       th:text="${product.price}"></span> &#x20AB;</p>
+                                    <p class="card-text sold">&Dstrok;&atilde; b&aacute;n <span th:text="${product.totalSold}"></span></p>
+                                    <button class="btn btn-warning btn-add" th:data-id="${product.id}"
+                                            th:onclick="|addCart(this.getAttribute ('data-id'))|">
+                                        <i class="fas fa-cart-plus text-white">Thêm Giỏ hàng</i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="shadow mx-auto position-absolute"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-3" th:if="${data.totalPages.size()} > 1">
+                    <nav>
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${not data.first}">
+                                <a class="page-link"
+                                   th:href="@{/san-pham?page={pageNumber} (pageNumber = ${data.pageNumber - 1})}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="p : ${data.totalPages}"
+                                th:classappend="${p == data.pageNumber} ? 'active' : ''">
+                                <a class="page-link"
+                                   th:href="@{/san-pham?page={pageNumber} (pageNumber = ${p})}"
+                                   th:text="${p}">1</a>
+                            </li>
+                            <li class="page-item" th:if="${not data.last}">
+                                <a class="page-link"
+                                   th:href="@{/san-pham?page={pageNumber} (pageNumber = ${data.pageNumber + 1})}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block id="js">
+    <script type="text/javascript" th:src="@{/vendor/pagination/jquery.simplePagination.js}"></script>
+    <script th:src="@{/script/except-home-page.js}"></script>
+    <script th:src="@{/script/shop.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        const addCart = async (id) => {
+            try {
+                if (isLogined == true) {
+                    await axios.post(`/cart/add/${id}`);
+                    toastr.success("Đã thêm vào giỏ hàng");
+                } else {
+                    toastr.warning("Vui lòng đăng nhập");
+                    setTimeout(function () {
+                        $('#signInSignUp').modal('show');
+                    }, 1000);
+                }
+            } catch (error) {
+                alert(error.response.data.message);
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>
